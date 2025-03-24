@@ -71,20 +71,24 @@ namespace mamciedosc
                     string query = $"SELECT * FROM pytania WHERE id={wylosowane[i]}";
                     MySqlCommand wynik = new MySqlCommand(query, conn);
                     MySqlDataReader rdr = wynik.ExecuteReader();
+                    
+                    string odp1,odp2,odp3,odp4;
 
                     if (rdr.Read())
                     {
-                        Pytanie pytanie = new Pytanie(
-                            Int32.Parse(rdr[0].ToString()),
-                            rdr[1].ToString(),
-                            rdr[2].ToString(),
-                            rdr[3].ToString(),
-                            rdr[4].ToString(),
-                            rdr[5].ToString(),
-                            rdr[6].ToString(),
-                            rdr[7].ToString()
-                        );
-                        Pytania.Add(pytanie);
+                        int idPytania = Int32.Parse(rdr[0].ToString());
+                        string pyt = rdr[1].ToString();
+                        string poprodp = rdr[6].ToString();
+                        string zdj = rdr[7].ToString();
+                        odp1 = rdr[2].ToString();
+                        odp2 = rdr[3].ToString();
+                        odp3 = rdr[4].ToString();
+                        odp4 = rdr[5].ToString();
+                        List<string> odpowiedzi = new List<string> { odp1,odp2,odp3,odp4 };
+                        odpowiedzi = odpowiedzi.OrderBy(x => rnd.Next()).ToList();
+
+                        Pytania.Add(new Pytanie(idPytania, pyt,
+                            odpowiedzi[0], odpowiedzi[1], odpowiedzi[2], odpowiedzi[3], poprodp, zdj));
                     }
                     rdr.Close(); 
                 }
