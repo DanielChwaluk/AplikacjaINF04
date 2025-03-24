@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="mamciedosc.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25">
+            <Label Text="Egzamin INF.04" HorizontalOptions="Center" FontSize="Large"/>
+            <Label Text="Twoje punkty: 0" x:Name="LblYourPoints" HorizontalOptions="Center" FontSize="Medium"/>
+            
+            <StackLayout x:Name="CaloscLayout" IsVisible="False" Padding="10" Spacing="10">
+                <Label FontSize="Medium" x:Name="LblPyt" Text="Zawartość pytania" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                <Image Source="dotnet_bot.png" WidthRequest="200" HorizontalOptions="Center" x:Name="ImgPyt" IsVisible="False"/>
+                <RadioButton x:Name="RadioOdp1">
+                    <RadioButton.Content>
+                        <Label Text="Odpowiedź 1"  x:Name="LblOdp1"/>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <RadioButton x:Name="RadioOdp2">
+                    <RadioButton.Content>
+                        <Label Text="Odpowiedź 2" x:Name="LblOdp2"/>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <RadioButton x:Name="RadioOdp3">
+                    <RadioButton.Content>
+                        <Label Text="Odpowiedź 3" x:Name="LblOdp3"/>
+                    </RadioButton.Content>
+                </RadioButton>
+
+                <RadioButton x:Name="RadioOdp4">
+                    <RadioButton.Content>
+                        <Label Text="Odpowiedź 4" x:Name="LblOdp4"/>
+                    </RadioButton.Content>
+                </RadioButton>
+            </StackLayout>
+            
+            <Label Text="" x:Name="LblKomunikat" FontSize="19"/>
+            <Button x:Name="ConfirmBtn" Text="Zatwierdź" WidthRequest="250" FontSize="19" Clicked="OnConfirmClicked"/>
+            <Button x:Name="NextBtn" Text="Kolejne pytanie" WidthRequest="250" BackgroundColor="White" TextColor="black" Clicked="OnNextClicked" IsEnabled="False"/>
+
+
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
