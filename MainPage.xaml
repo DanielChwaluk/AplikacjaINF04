@@ -8,8 +8,22 @@
             Padding="30,0"
             Spacing="25">
             <Label Text="Egzamin INF.04" HorizontalOptions="Center" FontSize="Large"/>
-            <Label Text="Twoje punkty: 0" x:Name="LblYourPoints" HorizontalOptions="Center" FontSize="Medium"/>
-            
+            <Label Text="Twoje punkty: 0" x:Name="LblYourPoints" HorizontalOptions="Center" FontSize="Medium" IsVisible="False"/>
+
+            <StackLayout x:Name="FirstLayout" Padding="30">
+                <Label Text="Wybierz standard" FontSize="Medium" HorizontalTextAlignment="Center"/>
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="50">
+                    <Button Text="40 Pytań" WidthRequest="200" HeightRequest="60" x:Name="DefaultUstawPytaniaBtn" FontSize="19" Clicked="UstawPytaniaClicked" BackgroundColor="White" TextColor="black"/>
+                    <HorizontalStackLayout Spacing="25">
+                        <VerticalStackLayout>
+                            <Label x:Name="MaxPytanLbl" Text="Ustaw Liczbę pytań 2-x"/>
+                            <Entry x:Name="EntryIloscPytan" Keyboard="Numeric" Text="2" TextChanged="EntryChanged"/>
+                        </VerticalStackLayout>
+                        <Button Clicked="UstawPytania2Clicked" x:Name="CustomPytaniaBtn" Text="Ustaw 2 Pytań" BackgroundColor="White" TextColor="black"/>
+                    </HorizontalStackLayout>
+                </HorizontalStackLayout>
+            </StackLayout>
+
             <StackLayout x:Name="CaloscLayout" IsVisible="False" Padding="10" Spacing="10">
                 <Label FontSize="Medium" x:Name="LblPyt" Text="Zawartość pytania" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
                 <Image Source="dotnet_bot.png" WidthRequest="200" HorizontalOptions="Center" x:Name="ImgPyt" IsVisible="False"/>
@@ -37,10 +51,14 @@
                     </RadioButton.Content>
                 </RadioButton>
             </StackLayout>
-            
+
             <Label Text="" x:Name="LblKomunikat" FontSize="19"/>
-            <Button x:Name="ConfirmBtn" Text="Zatwierdź" WidthRequest="250" FontSize="19" Clicked="OnConfirmClicked"/>
-            <Button x:Name="NextBtn" Text="Kolejne pytanie" WidthRequest="250" BackgroundColor="White" TextColor="black" Clicked="OnNextClicked" IsEnabled="False"/>
+            <StackLayout Padding="15" Spacing="15" x:Name="PrzyciskiLayout" IsVisible="False">
+                <Button x:Name="ConfirmBtn" Text="Zatwierdź" WidthRequest="250" FontSize="19" Clicked="OnConfirmClicked"/>
+                <Button x:Name="NextBtn" Text="Kolejne pytanie" WidthRequest="250" BackgroundColor="White" TextColor="black" Clicked="OnNextClicked" IsEnabled="False"/>
+            </StackLayout>
+            <Button x:Name="ResetBtn" IsVisible="False" Text="Zrób test ponownie" Clicked="OnResetButton" WidthRequest="250" BackgroundColor="White" TextColor="black" HorizontalOptions="Center"/>
+
 
 
 

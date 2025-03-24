@@ -11,11 +11,13 @@ namespace mamciedosc
         //Kolejność wylosowanych pytań po id
         static List<int> wylosowane = new List<int>();
         //Licznik, które pytanie z rzędu
-        static int Licznik = 0;
+        static int Licznik;
         //Zdobyte punkty
-        static int Punkty = 0;
+        static int Punkty;
         //Ilość pytań
-        static int MaxPytan = 4;
+        static int MaxPytan;
+        //Pytan w bazie
+        static int PytaniaBazy = 0;
         // połączenie z bazą
         static string connStr = "server=localhost;user=root;database=pytaniaegz;port=3306;password=";
         static MySqlConnection conn = new MySqlConnection(connStr);
@@ -45,9 +47,32 @@ namespace mamciedosc
         public MainPage()
         {
             InitializeComponent();
-            UtworzPytania();
-            UstawPytania();
+            PobierzMaxPytan();
         }
+
+        private void PobierzMaxPytan()
+        {
+            try
+            {
+                conn.Open();
+                    string query = $"select count(id) from pytania;";
+                    MySqlCommand wynik = new MySqlCommand(query, conn);
+                    MySqlDataReader rdr = wynik.ExecuteReader();
+                if(rdr.Read()) PytaniaBazy = Int32.Parse(rdr[0].ToString());
+                conn.Close();
+                MaxPytanLbl.Text = $"Ustaw Liczbę pytań: 2 - {PytaniaBazy}";
+                if (PytaniaBazy < 40) DefaultUstawPytaniaBtn.IsEnabled = false;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Błąd połączenia z bazą: {ex.Message}");
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
         private void UstawLosowosc()
         {
             do
@@ -88,6 +113,7 @@ namespace mamciedosc
 
                         Pytania.Add(new Pytanie(idPytania, pyt,
                             odpowiedzi[0], odpowiedzi[1], odpowiedzi[2], odpowiedzi[3], poprodp, zdj));
+                        rdr.Close();
                     }
                     rdr.Close(); 
                 }
@@ -103,7 +129,12 @@ namespace mamciedosc
         }
         private void UstawPytania()
         {
+            LblYourPoints.IsVisible = true;
             CaloscLayout.IsVisible = true;
+            PrzyciskiLayout.IsVisible = true;
+            LblYourPoints.IsVisible = true;
+            ConfirmBtn.IsEnabled = true;
+            NextBtn.IsEnabled = false;
             LblPyt.Text = Pytania[Licznik].pytanie;
             if (!string.IsNullOrEmpty(Pytania[Licznik].zdjecie))
             {
@@ -115,13 +146,53 @@ namespace mamciedosc
             LblOdp3.Text = Pytania[Licznik].odp3;
             LblOdp4.Text = Pytania[Licznik].odp4;
         }
+        private void UstawPytaniaClicked(object sender, EventArgs e)
+        {
+            MaxPytan = 40;
+            UtworzPytania();
+            UstawPytania();
+            FirstLayout.IsVisible = false;
+        }
+        private void UstawPytania2Clicked(object sender, EventArgs e)
+        {
+            MaxPytan = Int32.Parse(EntryIloscPytan.Text);
+            UtworzPytania();
+            UstawPytania();
+            FirstLayout.IsVisible = false;
+        }
+
+        private async void EntryChanged(object sender, EventArgs e)
+        {
+            if (EntryIloscPytan == null || string.IsNullOrEmpty(EntryIloscPytan.Text))
+            {
+                await DisplayAlert("Błąd", "Brak podanej ilości pytań", "OK");
+                EntryIloscPytan.Text = "2";
+                return;
+            }
+            if(Int32.TryParse(EntryIloscPytan.Text, out int ilosc))
+                if(ilosc<2 || ilosc > PytaniaBazy)
+                    {
+                        await DisplayAlert("Błąd", "Zła podana liczba pytań", "OK");
+                    EntryIloscPytan.Text = "2";
+                    return;
+                    } 
+                    else CustomPytaniaBtn.Text = $"Ustaw {ilosc} Pytań";
+            else
+            {
+                await DisplayAlert("Błąd", "Nie podano liczby", "OK");
+                EntryIloscPytan.Text = "2";
+                return;
+            }
+        }
+
         private void OnConfirmClicked(object sender, EventArgs e)
         {
             string TwojaOdp = "";
             if (RadioOdp1.IsChecked) TwojaOdp = LblOdp1.Text;
             if (RadioOdp2.IsChecked) TwojaOdp = LblOdp2.Text;
             if (RadioOdp3.IsChecked) TwojaOdp = LblOdp3.Text;
-            if (RadioOdp4.IsChecked) TwojaOdp = LblOdp4.Text;
+            if (RadioOdp4.IsChecked) TwojaOdp = LblOdp4.Text; 
+
 
             if (TwojaOdp == Pytania[Licznik].poprOdp)
             {
@@ -153,23 +224,27 @@ namespace mamciedosc
         }
         private void OnNextClicked(object sender, EventArgs e)
         {
-            if (Licznik >= Pytania.Count) { 
+            if (Licznik >= Pytania.Count)
+            {
+                double procenty = Math.Round((double)Punkty / MaxPytan * 100, 2);
+                PrzyciskiLayout.IsVisible = false;
                 CaloscLayout.IsVisible = false;
                 LblKomunikat.HorizontalTextAlignment = TextAlignment.Center;
                 LblKomunikat.FontSize = 26;
-                if (Punkty >= (MaxPytan / 2))
+                ResetBtn.IsVisible = true;
+                if (procenty>=50)
                 {
-                    LblKomunikat.Text = "Gratulacje, zdałeś!";
+                    LblKomunikat.Text = $"Gratulacje, zdałeś! Uzyskałeś {procenty} %!";
                     LblKomunikat.TextColor = Colors.Green;
                     LblYourPoints.Text = $"Twoje punkty: {Punkty} / {MaxPytan}";
                 }
                 else
                 {
-                    LblKomunikat.Text = "Niestety nie zdałeś, spróbuj następnym razem :(";
-                    LblKomunikat.TextColor= Colors.Red;
+                    LblKomunikat.Text = $"Niestety nie zdałeś, spróbuj następnym razem :(, Uzyskałeś {procenty} %!";
+                    LblKomunikat.TextColor = Colors.Red;
                     LblYourPoints.Text = $"Twoje punkty: {Punkty} / {MaxPytan}";
                 }
-                    return;
+                return;
             } // Zapobiega błędom poza zakresem
 
             LblKomunikat.Text = "";
@@ -182,7 +257,9 @@ namespace mamciedosc
             RadioOdp3.IsEnabled = true;
             RadioOdp4.IsEnabled = true;
         }
-
-
+        private void OnResetButton(object sender, EventArgs e)
+        {
+            
+        }
     }
 }
