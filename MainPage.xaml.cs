@@ -15,7 +15,7 @@ namespace mamciedosc
         //Zdobyte punkty
         static int Punkty = 0;
         //Ilość pytań
-        static int MaxPytan = 5;
+        static int MaxPytan = 4;
         // połączenie z bazą
         static string connStr = "server=localhost;user=root;database=pytaniaegz;port=3306;password=";
         static MySqlConnection conn = new MySqlConnection(connStr);
@@ -47,7 +47,6 @@ namespace mamciedosc
             InitializeComponent();
             UtworzPytania();
             UstawPytania();
-
         }
         private void UstawLosowosc()
         {
@@ -84,7 +83,7 @@ namespace mamciedosc
                         odp2 = rdr[3].ToString();
                         odp3 = rdr[4].ToString();
                         odp4 = rdr[5].ToString();
-                        List<string> odpowiedzi = new List<string> { odp1,odp2,odp3,odp4 };
+                        List<string> odpowiedzi = new List<string> { odp1,odp2,odp3, odp4};
                         odpowiedzi = odpowiedzi.OrderBy(x => rnd.Next()).ToList();
 
                         Pytania.Add(new Pytanie(idPytania, pyt,
@@ -140,19 +139,37 @@ namespace mamciedosc
             LblYourPoints.Text = $"Twoje punkty: {Punkty}";
 
             ConfirmBtn.IsEnabled = false;
-            NextBtn.IsEnabled = Licznik < MaxPytan;
+            NextBtn.IsEnabled = true;
 
             RadioOdp1.IsEnabled = false;
             RadioOdp2.IsEnabled = false;
             RadioOdp3.IsEnabled = false;
             RadioOdp4.IsEnabled = false;
             ImgPyt.IsVisible = false;
+            if (Licznik >= Pytania.Count)
+            {
+                NextBtn.Text = "Zakończ";
+            }
         }
         private void OnNextClicked(object sender, EventArgs e)
         {
             if (Licznik >= Pytania.Count) { 
                 CaloscLayout.IsVisible = false;
-                return;
+                LblKomunikat.HorizontalTextAlignment = TextAlignment.Center;
+                LblKomunikat.FontSize = 26;
+                if (Punkty >= (MaxPytan / 2))
+                {
+                    LblKomunikat.Text = "Gratulacje, zdałeś!";
+                    LblKomunikat.TextColor = Colors.Green;
+                    LblYourPoints.Text = $"Twoje punkty: {Punkty} / {MaxPytan}";
+                }
+                else
+                {
+                    LblKomunikat.Text = "Niestety nie zdałeś, spróbuj następnym razem :(";
+                    LblKomunikat.TextColor= Colors.Red;
+                    LblYourPoints.Text = $"Twoje punkty: {Punkty} / {MaxPytan}";
+                }
+                    return;
             } // Zapobiega błędom poza zakresem
 
             LblKomunikat.Text = "";
