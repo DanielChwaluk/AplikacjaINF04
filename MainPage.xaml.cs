@@ -54,14 +54,18 @@ namespace mamciedosc
         {
             try
             {
-                conn.Open();
-                    string query = $"select count(id) from pytania;";
-                    MySqlCommand wynik = new MySqlCommand(query, conn);
-                    MySqlDataReader rdr = wynik.ExecuteReader();
-                if(rdr.Read()) PytaniaBazy = Int32.Parse(rdr[0].ToString());
-                conn.Close();
+                using (var conn = new MySqlConnection(connStr))
+                {
+                    conn.Open();
+                    string query = "SELECT COUNT(id) FROM pytania;";
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                        using (MySqlDataReader rdr = cmd.ExecuteReader())
+                            if (rdr.Read())
+                                PytaniaBazy = Convert.ToInt32(rdr[0]);
+                }
                 MaxPytanLbl.Text = $"Ustaw Liczbę pytań: 2 - {PytaniaBazy}";
-                if (PytaniaBazy < 40) DefaultUstawPytaniaBtn.IsEnabled = false;
+                DefaultUstawPytaniaBtn.IsEnabled = PytaniaBazy >= 40;
+
             }
             catch (Exception ex)
             {
@@ -245,7 +249,12 @@ namespace mamciedosc
                     LblYourPoints.Text = $"Twoje punkty: {Punkty} / {MaxPytan}";
                 }
                 return;
-            } // Zapobiega błędom poza zakresem
+            }
+
+            RadioOdp1.IsChecked = false;
+            RadioOdp2.IsChecked = false;
+            RadioOdp3.IsChecked = false;
+            RadioOdp4.IsChecked = false;
 
             LblKomunikat.Text = "";
             UstawPytania();
@@ -259,7 +268,22 @@ namespace mamciedosc
         }
         private void OnResetButton(object sender, EventArgs e)
         {
-            
+            Pytania.Clear();
+            wylosowane.Clear();
+            Licznik = 0;
+            Punkty = 0;
+            MaxPytan = 0;
+            NextBtn.Text = "Kolejne Pytanie";
+
+            FirstLayout.IsVisible = true;
+            ResetBtn.IsVisible = false;
+            RadioOdp1.IsEnabled = true;
+            RadioOdp2.IsEnabled = true;
+            RadioOdp3.IsEnabled = true;
+            RadioOdp4.IsEnabled = true;
+            LblKomunikat.Text = "";
+            LblYourPoints.Text = "Twoje punkty 0";
+            LblYourPoints.IsVisible = false;
         }
     }
 }
