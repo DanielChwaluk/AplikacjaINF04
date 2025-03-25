@@ -10,11 +10,11 @@
             <Label Text="Egzamin INF.04" HorizontalOptions="Center" FontSize="Large"/>
             <Label Text="Twoje punkty: 0" x:Name="LblYourPoints" HorizontalOptions="Center" FontSize="Medium" IsVisible="False"/>
 
-            <StackLayout x:Name="FirstLayout" Padding="30">
+            <StackLayout x:Name="FirstLayout" Padding="30" Spacing="30">
                 <Label Text="Wybierz standard" FontSize="Medium" HorizontalTextAlignment="Center"/>
-                <HorizontalStackLayout HorizontalOptions="Center" Spacing="50">
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="50" Padding="25">
                     <Button Text="40 Pytań" WidthRequest="200" HeightRequest="60" x:Name="DefaultUstawPytaniaBtn" FontSize="19" Clicked="UstawPytaniaClicked" BackgroundColor="White" TextColor="black"/>
-                    <HorizontalStackLayout Spacing="25">
+                    <HorizontalStackLayout Spacing="25" Padding="20">
                         <VerticalStackLayout>
                             <Label x:Name="MaxPytanLbl" Text="Ustaw Liczbę pytań 2-x"/>
                             <Entry x:Name="EntryIloscPytan" Keyboard="Numeric" Text="2" TextChanged="EntryChanged"/>
